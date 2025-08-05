@@ -417,6 +417,7 @@ copy_3566() {
 copy_3326() {
   echo "📂 [3326] 复制 mod 文件"
   cp -rf ./sys_root_files/* ${system_root}/
+  chmod 775 -R ./mod_files/usr/lib/autostart/
   cp -rf ./mod_files/* ${system_root}/
   mkdir -p ${mount_point_storage}/data/
   cp ${common_dev}/update.sh  ${mount_point_storage}/data/
