@@ -13,6 +13,7 @@ hw_info="$(echo ${hw_info} | sed -e "s#[/]#-#g")"
 # Debug
 if [ -f /flash/debug_en ]; then
     mount -o remount,rw /flash
+    dmesg > /flash/kmsg.log
 fi
 sysctl -w kernel.core_pattern="| /bin/false"
 
