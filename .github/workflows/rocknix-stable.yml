@@ -162,7 +162,7 @@ jobs:
           if [ -n "${{ github.event.inputs.selected_archs }}" ]; then
             IFS=',' read -ra base <<< "${{ github.event.inputs.selected_archs }}"
           else
-            base=("3566_stable" "x55_stable" "3326_stable" "h700_stable" "3326-emmc_stable")
+            base=("3566_stable" "x55_stable" "3326_stable" "h700_stable" "3326-emmc_stable" "sm8250_stable")
           fi
 
           result="["
