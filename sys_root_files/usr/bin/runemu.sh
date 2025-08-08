@@ -168,7 +168,6 @@ set_kill stop
 
 # freej2me needs the JDK to be downloaded on the first run
 if [[ ${PLATFORM} == "j2me" ]]; then
-  /usr/bin/freej2me.sh
   export LANG="zh_CN.UTF-8"
   JAVA_HOME='/storage/jdk'
   export JAVA_HOME
@@ -441,6 +440,14 @@ fi
 CPU_GOVERNOR=$(get_setting "cpugovernor" "${PLATFORM}" "${ROMNAME##*/}")
 ${VERBOSE} && log $0 "Set emulation performance mode to (${CPU_GOVERNOR})"
 ${CPU_GOVERNOR}
+
+# Check for MangoHud support and turn MangoHud off by defualt, will add ES feature later
+MANGOHUD_SUPPORTED=$(get_setting "rocknix.mangohud.supported")
+if [ "${MANGOHUD_SUPPORTED}" = "true" ]; then
+  /usr/bin/mangohud_set "off"
+  RUNTHIS="/usr/bin/mangohud ${RUNTHIS}"
+  ${VERBOSE} && log $0 "Enabling MangoHud"
+fi
 
 # If the rom is a shell script just execute it, useful for DOSBOX and ScummVM scan scripts
 if [[ "${ROMNAME}" == *".sh" ]] && [ ! "${PLATFORM}" = "ports" ] && [ ! "${PLATFORM}" = "windows" ]; then
