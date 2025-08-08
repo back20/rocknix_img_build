@@ -543,6 +543,10 @@ modify_system() {
         echo "... M o d: $(date '+%a %b %e %H:%M:%S CST %Y')"
         echo -e "... Mod by \e[1;32mkk\e[0m & \e[1;33mlcdyk\e[0m based on \e[1;34mG.R.H\e[0m"
     } >> "${system_root}/etc/issue"
+
+    python tools/add_core_to_emulator.py update_files/common/core_desc.txt ${system_root}/usr/config/emulationstation/es_systems.cfg
+    python tools/update_ext.py update_files/common/ext_desc.txt ${system_root}/usr/config/emulationstation/es_systems.cfg
+    python tools/merge_system.py update_files/common/extra_system.cfg ${system_root}/usr/config/emulationstation/es_systems.cfg
 }
 
 finalize_image() {
