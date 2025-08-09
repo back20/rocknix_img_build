@@ -1,0 +1,26 @@
+easyrpg, retroarch, easyrpg_32b
+famicom, retroarch, fceumm_mod_32b
+fbn, retroarch, fbneo_plus, default
+fbn, retroarch, fbneo_ips
+fbn, retroarch, km_fbneo_xtreme_amped
+fds, retroarch, fceumm_mod_32b
+gb, retroarch, mgba_rumble
+gb, retroarch, gpsp_mod_32b
+gba, retroarch, mgba_rumble
+gba, retroarch, gpsp_mod_32b
+gbah, retroarch, mgba_rumble
+gbah, retroarch, gpsp_mod_32b
+gbc, retroarch, mgba_rumble
+gbc, retroarch, gpsp_mod_32b
+gbch, retroarch, mgba_rumble
+gbch, retroarch, gpsp_mod_32b
+gbh, retroarch, mgba_rumble
+gbh, retroarch, gpsp_mod_32b
+genesis, retroarch, genesis_plus_gx_EX
+j2me, freej2me, freej2me_mod, default
+mame, retroarch, mamearcade
+nds, drastic, drastic_opt-sa, default
+nesh, retroarch, fceumm_mod_32b
+openbor, OpenBOR, OpenBOR_ff
+pc, retroarch, dosbox_svn, default
+psx, retroarch, pcsx_rearmed_rumble_32b

@@ -14,6 +14,7 @@ IS_X55=false
 IS_3566=false
 IS_3326=false
 IS_H700=false
+IS_SM8250=false
 IS_STABLE=false
 IS_BACKUPREPO=false
 IS_EMMC=false
@@ -24,6 +25,7 @@ if [[ "$DEVICE" == 3566* || "$DEVICE" == x55* ]]; then IS_3566=true; fi
 if [[ "$DEVICE" == *emmc* ]] ; then IS_EMMC=true; fi
 if [[ "$DEVICE" == 3326* ]]; then IS_3326=true; fi
 if [[ "$DEVICE" == h700* ]]; then IS_H700=true; fi
+if [[ "$DEVICE" == sm8250* ]]; then IS_SM8250=true; fi
 if [[ "$DEVICE" == *stable ]]; then IS_STABLE=true; fi
 
 if [ "$UID" -ne 0 ]; then
@@ -277,6 +279,7 @@ get_latest_version() {
         x55*)  PATTERN="RK3566.*x55.img.gz$" ;;
         3566*) PATTERN="RK3566.*Generic.img.gz$" ;;
         h700*) PATTERN="H700.*img.gz$" ;;
+        sm8250*) PATTERN="SM8250.*img.gz$" ;;
         *) echo -e "\033[1;31m❌ 不支持的设备类型：$DEVICE\033[0m" && exit 1 ;;
     esac
 
@@ -521,6 +524,51 @@ copy_h700() {
 
 }
 
+copy_sm8250() {
+  echo "📂 [SM8250] 复制 mod 文件"
+  cp -rf ./sys_root_files/* ${system_root}/
+  EXCLUDE_FILES=("mcu_led" "mcu_led_ctrl.sh")
+  EXCLUDE_DIRS=("quirks/devices/")
+
+  SOURCE_DIR="./mod_files"
+  TARGET_DIR="${system_root}"  # 替换为你的目标根目录
+
+  # 遍历 SOURCE_DIR 下的所有文件（相对于 SOURCE_DIR）
+  find "$SOURCE_DIR" -type f | while read -r filepath; do
+      relative_path="${filepath#$SOURCE_DIR/}"  # 获取相对路径
+      skip=false
+
+      #### [1] 检查是否在排除目录中 ####
+      for dir in "${EXCLUDE_DIRS[@]}"; do
+          if [[ "$relative_path" == "$dir"* ]]; then
+              skip=true
+              break
+          fi
+      done
+
+      #### [2] 检查是否是排除的文件名 ####
+      if [ "$skip" = false ]; then
+          filename=$(basename "$relative_path")
+          for exfile in "${EXCLUDE_FILES[@]}"; do
+              if [[ "$filename" == "$exfile" ]]; then
+                  skip=true
+                  break
+              fi
+          done
+      fi
+
+      #### [3] 如果不在排除项中，则执行复制 ####
+      if [ "$skip" = false ]; then
+          target_path="$TARGET_DIR/$relative_path"
+          mkdir -p "$(dirname "$target_path")"
+          cp "$filepath" "$target_path"
+      fi
+  done
+  mkdir -p ${mount_point_storage}/data/
+  cp ${common_dev}/update.sh  ${mount_point_storage}/data/
+  cp ${common_dev}/functions ${mount_point_storage}/data/
+}
+
 modify_system() {
     if $IS_3566; then
         echo -e "\033[1;36m🔁 应用 3566 平台补丁...\033[0m"
@@ -531,6 +579,9 @@ modify_system() {
     elif $IS_H700; then
         echo -e "\033[1;36m🔁 应用 H700 平台补丁...\033[0m"
         copy_h700
+    elif $IS_SM8250; then
+        echo -e "\033[1;36m🔁 应用 SM8250 平台补丁...\033[0m"
+        copy_sm8250
     fi
 
     echo -e "\033[1;36m📝 修改 /etc/issue 等版本标识...\033[0m"
@@ -543,6 +594,10 @@ modify_system() {
         echo "... M o d: $(date '+%a %b %e %H:%M:%S CST %Y')"
         echo -e "... Mod by \e[1;32mkk\e[0m & \e[1;33mlcdyk\e[0m based on \e[1;34mG.R.H\e[0m"
     } >> "${system_root}/etc/issue"
+
+    python tools/add_core_to_emulator.py update_files/common/core_desc.txt ${system_root}/usr/config/emulationstation/es_systems.cfg
+    python tools/update_ext.py update_files/common/ext_desc.txt ${system_root}/usr/config/emulationstation/es_systems.cfg
+    python tools/merge_system.py update_files/common/extra_system.cfg ${system_root}/usr/config/emulationstation/es_systems.cfg
 }
 
 finalize_image() {

@@ -1,0 +1,1 @@
+fbn, ".7z .zip .fid .hak .FID .HAK"

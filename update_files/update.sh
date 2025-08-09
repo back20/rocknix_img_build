@@ -20,7 +20,26 @@ function Test_Button_B(){
 event_type="EV_KEY"
 event_btn_a="BTN_EAST"
 event_btn_b="BTN_SOUTH"
-event_dev=`readlink -f /dev/input/by-path/platform-*event-joystick`
+
+# 初始化 event_dev 变量
+event_dev=""
+
+# 检查是否存在 joystick 设备
+if [ -e /dev/input/by-path/platform-*event-joystick ]; then
+    # 使用 eval 处理通配符并解析符号链接
+    joystick_dev=$(eval echo /dev/input/by-path/platform-*event-joystick)
+    if [ -e "$joystick_dev" ]; then
+        event_dev=$(readlink -f "$joystick_dev")
+    fi
+# 如果没有 joystick，则检查 mouse 设备
+elif [ -e /dev/input/by-path/platform-*-event-mouse ]; then
+    mouse_dev=$(eval echo /dev/input/by-path/platform-*-event-mouse)
+    if [ -e "$mouse_dev" ]; then
+        event_dev=$(readlink -f "$mouse_dev")
+    fi
+else
+    echo "No suitable input device found." >/dev/tty0
+fi
 
 echo -e "\n" >/dev/tty0
 echo " =======================" >/dev/tty0
